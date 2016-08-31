@@ -2,16 +2,16 @@ package populationMap;
 
 public class Triangle {
 
-	private double[][] vertices;
+	private float[][] vertices;
 	
 	
 	
 	public Triangle() {
-		vertices = new double[3][];
+		vertices = new float[3][];
 	}
 	
 	
-	public Triangle(double[] v0, double[] v1, double[] v2) {
+	public Triangle(float[] v0, float[] v1, float[] v2) {
 		this();
 		vertices[0] = v0;
 		vertices[1] = v1;
@@ -20,17 +20,17 @@ public class Triangle {
 	
 	
 	
-	public double[] getVertex(int num) {
+	public float[] getVertex(int num) {
 		return vertices[num];
 	}
 	
 	
-	public void setVertex(int num, double[] v) {
+	public void setVertex(int num, float[] v) {
 		vertices[num] = v;
 	}
 	
 	
-	public double[] getNormal() {
+	public float[] getNormal() {
 		return null;
 	}
 
