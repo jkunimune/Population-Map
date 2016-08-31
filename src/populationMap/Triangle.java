@@ -31,7 +31,23 @@ public class Triangle {
 	
 	
 	public float[] getNormal() {
-		return null;
+		float[] v1 = new float[3];
+		for (int i = 0; i < 3; i ++)
+			v1[i] = vertices[1][i] - vertices[0][i];
+		
+		float[] v2 = new float[3];
+		for (int i = 0; i < 3; i ++)
+			v1[i] = vertices[2][i] - vertices[0][i];
+		
+		float[] v1xv2 = new float[3];
+		for (int i = 0; i < 3; i ++)
+			v1xv2[i] = v1[(i+1)%3]*v2[(i+2)%3] - v2[(i+1)%3]*v1[(i+2)%3];
+		
+		final float norm = (float) Math.sqrt(Math.pow(v1xv2[0], 2) + Math.pow(v1xv2[1], 2) + Math.pow(v1xv2[2], 2));
+		for (int i = 0; i < 3; i ++)
+			v1xv2[i] /= norm;
+		
+		return v1xv2;
 	}
 
 }
