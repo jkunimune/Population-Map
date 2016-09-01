@@ -6,23 +6,29 @@ import java.util.Collection;
 
 public class Main {
 
-	public static final float[] POLE = {90, 0};
+	public static final double[] POLE = {0.1, 1.5};
 	
-	public static final int RADIUS = 10;//40;
+	public static final int RADIUS = 100;
 	
 	public static final int DEPTH = 5;
 	
 	public static final float SCALE = (float) 0.1;
 	
-	public static final float OFFSET = 2;
+	public static final float OFFSET = -12;
 	
-	public static final float STEP = (float) Math.PI/8;
+	public static final float STEP = (float) Math.PI/40;
 	
 	
 	
 	public static void main(String[] args) {
 	
-		final float[][] map = AzimuthalEqualArea.map("assets/input.png", POLE[0], POLE[1], RADIUS);
+		float[][] map;
+		try {
+			map = AzimuthalEqualArea.map("assets/input.png", POLE[0], POLE[1], RADIUS);
+		} catch (IOException e1) {
+			System.err.println("err.");
+			map = new float[1][1];
+		}
 		
 		Collection<Triangle> facets = new ArrayList<Triangle>(4);
 		
@@ -86,11 +92,6 @@ public class Main {
 					facets.add(T2);
 			}
 		}
-		
-		//facets.add(new Triangle(
-		//		dataVertex(surface[0].length/2, 1, surface),
-		//		dataVertex(surface[0].length/2, 2, surface),
-		//		dataVertex(surface[0].length/2+1, 2, surface)));
 		
 		return facets;
 	}
