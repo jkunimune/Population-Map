@@ -5,11 +5,11 @@ import java.io.DataOutputStream;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.List;
+import java.util.Collection;
 
 public class STL {
 
-	public static final void writeToAsciiFile(String filename, List<Triangle> facets) throws IOException {
+	public static final void writeToAsciiFile(String filename, Collection<Triangle> facets) throws IOException {
 		BufferedWriter out = new BufferedWriter(new FileWriter(filename));
 		
 		out.write("solid ");
@@ -35,7 +35,7 @@ public class STL {
 	}
 	
 	
-	public static final void writeToBinaryFile(String filename, List<Triangle> facets) throws IOException {
+	public static final void writeToBinaryFile(String filename, Collection<Triangle> facets) throws IOException {
 		DataOutputStream out = new DataOutputStream(new FileOutputStream(filename));
 		
 		for (int i = 0; i < 80; i ++)

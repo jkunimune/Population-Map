@@ -49,5 +49,14 @@ public class Triangle {
 		
 		return v1xv2;
 	}
+	
+	
+	public boolean isValid() {
+		for (float[] v: vertices)
+			for (float f: v)
+				if (Float.isNaN(f))
+					return false;
+		return true;
+	}
 
 }
