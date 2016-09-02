@@ -6,15 +6,19 @@ import java.util.Collection;
 
 public class Main {
 
-	public static final double[] POLE = {0.1, 1.5};
+	public static final double[] POLE = {0.9, 0.7};
 	
 	public static final int RADIUS = 100;
 	
 	public static final int DEPTH = 5;
 	
-	public static final float SCALE = (float) 0.1;
+	public static final float SCALE = (float) 0.0000025;
 	
-	public static final float OFFSET = -12;
+	public static final float OFFSET = (float) 0.1;
+	
+	public static final double SIGMA = .01;
+	
+	public static final int SKIP = 1;
 	
 	public static final float STEP = (float) Math.PI/40;
 	
@@ -22,13 +26,17 @@ public class Main {
 	
 	public static void main(String[] args) {
 	
+		System.out.println("begin "+System.currentTimeMillis()%86400000);
+		
 		float[][] map;
 		try {
-			map = AzimuthalEqualArea.map("assets/input.png", POLE[0], POLE[1], RADIUS);
+			map = AzimuthalEqualArea.map("assets/input.png", -POLE[0], POLE[1], RADIUS);
 		} catch (IOException e1) {
-			System.err.println("err.");
+			System.err.println(e1);
 			map = new float[1][1];
 		}
+		
+		System.out.println("check "+System.currentTimeMillis()%86400000);
 		
 		Collection<Triangle> facets = new ArrayList<Triangle>(4);
 		
@@ -41,7 +49,7 @@ public class Main {
 			STL.writeToAsciiFile("assets/myMap.stl", facets);
 		} catch (IOException e) {}
 		
-		System.out.println("done");
+		System.out.println("done  "+System.currentTimeMillis()%86400000);
 	
 	}
 
@@ -95,8 +103,8 @@ public class Main {
 		
 		return facets;
 	}
-	
-	
+
+
 	private static Collection<Triangle> buildMergezone(float[][] surface) {
 		Collection<Triangle> facets = new ArrayList<Triangle>();
 		
@@ -145,13 +153,14 @@ public class Main {
 		final float[] output = {(float) (RADIUS*Math.cos(theta)), (float) (RADIUS*Math.sin(theta)), -DEPTH};
 		return output;
 	}
-	
+
 	private static float[] dataVertex(int x, int y, float[][] map) {
 		if (y == map.length-1) {
 			final float[] output = {Float.NaN, Float.NaN, Float.NaN};
 			return output;
 		}
-		final float[] output = {x-map[y].length/2, y-map.length/2, map[y][x]*SCALE+OFFSET};
+		
+		float[] output = {x-map[y].length/2, y-map.length/2, map[y][x]*SCALE+OFFSET};
 		return output;
 	}
 

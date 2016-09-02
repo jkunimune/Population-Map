@@ -1,21 +1,21 @@
 package populationMap;
 
-import java.awt.image.BufferedImage;
-import java.io.File;
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
-
-import javax.imageio.ImageIO;
 
 public class AzimuthalEqualArea {
 
 	public static final float[][] map(String filename, double pp, double lp, int r) throws IOException {
-		final BufferedImage img = ImageIO.read(new File("assets/input.png"));
+		final double[][] data = loadEsriAsc();
+		
+		System.out.println("check "+System.currentTimeMillis()%86400000);
 		
 		float[][] surface = new float[2*(r+1)][2*(r+1)];
 		for (int i = 0; i < surface.length; i ++) {
 			for (int j = 0; j < surface[i].length; j ++) {
 				if (Math.hypot(i-r-1, j-r-1) < r)
-					surface[i][j] = getValue(img, mathCoords((double)(i-r-1)/r, (double)(j-r-1)/r, pp, lp));
+					surface[i][j] = getValue(data, mathCoords((double)(i-r-1)/r, (double)(j-r-1)/r, pp, lp));
 				else
 					surface[i][j] = Float.NaN;
 			}
@@ -37,7 +37,7 @@ public class AzimuthalEqualArea {
 	}
 	
 	
-	public static final double[] obliquify(double[] coords, double phiP, double lamP) {
+	private static final double[] obliquify(double[] coords, double phiP, double lamP) {
 		final double phi1 = coords[0];
 		final double lam1 = coords[1];
 		double phif = Math.asin(Math.sin(phiP)*Math.sin(phi1) + Math.cos(phiP)*Math.cos(lam1)*Math.cos(phi1));
@@ -63,17 +63,91 @@ public class AzimuthalEqualArea {
 	}
 	
 	
-	private static final float getValue(BufferedImage ref, double[] coords) {
+	private static final float getValue(double[][] data, double[] coords) {
 		final double latitude = coords[0];
 		final double longitude = coords[1];
-		int x = (int) ((longitude/(2*Math.PI))*ref.getWidth());
-		while (x < 0)	x += ref.getWidth();
-		x %= ref.getWidth();
-		int y = (int) ((0.5 - latitude/(Math.PI))*ref.getHeight());
-		if (y >= ref.getHeight())	y = ref.getHeight()-1;
-		final int color = ref.getRGB(x, y);
+		int x = (int) ((longitude/(2*Math.PI))*data[0].length);
+		while (x < 0)	x += data[0].length;
+		x += data[0].length;
+		int y = (int) ((0.5 - latitude/(Math.PI))*data.length);
+		if (y == data.length)	y = data.length-1;
+		y += data.length;
 		
-		return (color&0x0000ff) + ((color&0x00ff00)>>8) + ((color&0xff0000)>>16);
+		final int r = (int) (3*data.length*Main.SIGMA)/Main.SKIP*Main.SKIP;
+		final double s = data.length*Main.SIGMA;
+		int valSum = 0;
+		int gasSum = 0;
+		for (int dy = -r; dy <= r; dy += Main.SKIP) {
+			for (int dx = -r; dx <= r; dx += Main.SKIP) {
+				final double dr2 = dx*dx*Math.pow(Math.sin(latitude),2) + dy*dy;
+				final double gaussian = Math.exp(-dr2/(2*s*s));
+				valSum += gaussian*data[(y+dy)%data.length][(x+dx)%data[0].length];
+				gasSum += gaussian;
+			}
+		}
+		
+		if (1 / data[y%data.length][x%data[0].length] < 0)
+			return (float) (valSum/gasSum) - 10000000;
+		return (float) (valSum/gasSum);
+	}
+	
+	
+	private static final float getLand(double[][] data, double[] coords) {
+		final double latitude = coords[0];
+		final double longitude = coords[1];
+		int x = (int) ((longitude/(2*Math.PI))*data[0].length);
+		while (x < 0)	x += data[0].length;
+		x += data[0].length;
+		int y = (int) ((0.5 - latitude/(Math.PI))*data.length);
+		if (y == data.length)	y = data.length-1;
+		y += data.length;
+		
+		if (data[(y)%data.length][(x)%data[0].length] > 0)
+			return 1000000;
+		else
+			return 0;
+	}
+	
+	
+	private static double[][] loadEsriAsc() throws IOException {
+		final BufferedReader in = new BufferedReader(new FileReader("assets/glds00ag.asc"));
+		
+		final int ncols = Integer.parseInt(in.readLine().substring(14));
+		final int nrows = Integer.parseInt(in.readLine().substring(14));
+		final int xllcorner = Integer.parseInt(in.readLine().substring(14));
+		final int yllcorner = Integer.parseInt(in.readLine().substring(14));
+		final double cellsize = Double.parseDouble(in.readLine().substring(14));
+		final double NODATA = Double.parseDouble(in.readLine().substring(14));
+		
+		final int startYIdx = 0;//(int)(Math.round((yllcorner+90)/cellsize));
+		
+		double[][] map = new double[(int)Math.round(180/cellsize)][];
+		/*for (int i = 0; i < startYIdx; i ++) {
+			map[i] = new double[(int)Math.round(360/cellsize)];
+			for (int j = 0; j < map[i].length; j ++) {
+				map[i][j] = 0;
+			}
+		}*/
+		for (int i = 0; i < nrows; i ++) {
+			final String[] row = in.readLine().split(" ");
+			final int yIdx = i + startYIdx;
+			map[yIdx] = new double[(int)Math.round(360/cellsize)];
+			for (int j = 0; j < ncols; j ++) {
+				final int xIdx = j + (int)Math.round((xllcorner+180)/cellsize);
+				map[yIdx][xIdx] = Double.parseDouble(row[j]);
+				if (map[yIdx][xIdx] == NODATA)
+					map[yIdx][xIdx] = -0.0;
+			}
+		}
+		for (int i = startYIdx+nrows; i < map.length; i ++) {
+			map[i] = new double[(int)Math.round(360/cellsize)];
+			for (int j = 0; j < ncols; j ++) {
+				map[i][j] = 0;
+			}
+		}
+		
+		in.close();
+		return map;
 	}
 
 }
