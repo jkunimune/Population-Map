@@ -10,11 +10,11 @@ public class Main {
 	
 	public static final int RADIUS = 100;
 	
-	public static final int DEPTH = 5;
+	public static final int DEPTH = 4;
 	
-	public static final float SCALE = (float) 0.0000025;
+	public static final float SCALE = (float) 0.000005;
 	
-	public static final float OFFSET = (float) 0.1;
+	public static final float OFFSET = 3;
 	
 	public static final double SIGMA = .01;
 	

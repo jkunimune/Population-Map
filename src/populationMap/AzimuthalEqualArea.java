@@ -87,12 +87,12 @@ public class AzimuthalEqualArea {
 		}
 		
 		if (1 / data[y%data.length][x%data[0].length] < 0)
-			return (float) (valSum/gasSum) - 10000000;
+			return (float) (valSum/gasSum) - 300000;
 		return (float) (valSum/gasSum);
 	}
 	
 	
-	private static final float getLand(double[][] data, double[] coords) {
+	public static final float getLand(double[][] data, double[] coords) {
 		final double latitude = coords[0];
 		final double longitude = coords[1];
 		int x = (int) ((longitude/(2*Math.PI))*data[0].length);
@@ -142,7 +142,7 @@ public class AzimuthalEqualArea {
 		for (int i = startYIdx+nrows; i < map.length; i ++) {
 			map[i] = new double[(int)Math.round(360/cellsize)];
 			for (int j = 0; j < ncols; j ++) {
-				map[i][j] = 0;
+				map[i][j] = -0.0;
 			}
 		}
 		
