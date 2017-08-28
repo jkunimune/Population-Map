@@ -37,7 +37,7 @@ public class Triangle {
 		
 		float[] v2 = new float[3];
 		for (int i = 0; i < 3; i ++)
-			v1[i] = vertices[2][i] - vertices[0][i];
+			v2[i] = vertices[2][i] - vertices[0][i];
 		
 		float[] v1xv2 = new float[3];
 		for (int i = 0; i < 3; i ++)

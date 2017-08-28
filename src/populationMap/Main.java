@@ -6,7 +6,8 @@ import java.util.Collection;
 
 public class Main {
 
-	public static final double[] POLE = {0.9, 0.7};
+	//public static final double[] POLE = {0.9, 0.7};
+	public static final double[] POLE = {0.1, 0.0};
 	
 	public static final int RADIUS = 100;
 	
@@ -30,7 +31,7 @@ public class Main {
 		
 		float[][] map;
 		try {
-			map = AzimuthalEqualArea.map("assets/input.png", -POLE[0], POLE[1], RADIUS);
+			map = AzimuthalEqualArea.map(-POLE[0], POLE[1], RADIUS);
 		} catch (IOException e1) {
 			System.err.println(e1);
 			map = new float[1][1];

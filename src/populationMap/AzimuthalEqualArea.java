@@ -6,7 +6,7 @@ import java.io.IOException;
 
 public class AzimuthalEqualArea {
 
-	public static final float[][] map(String filename, double pp, double lp, int r) throws IOException {
+	public static final float[][] map(double pp, double lp, int r) throws IOException {
 		final double[][] data = loadEsriAsc();
 		
 		System.out.println("check "+System.currentTimeMillis()%86400000);
