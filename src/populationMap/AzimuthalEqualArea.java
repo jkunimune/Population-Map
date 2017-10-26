@@ -110,7 +110,7 @@ public class AzimuthalEqualArea {
 	
 	
 	private static double[][] loadEsriAsc() throws IOException {
-		final BufferedReader in = new BufferedReader(new FileReader("assets/glds00ag.asc"));
+		final BufferedReader in = new BufferedReader(new FileReader("assets/glds00ag.asc")); //sourced from http://sedac.ciesin.columbia.edu/data/set/gpw-v3-population-density/data-download
 		
 		final int ncols = Integer.parseInt(in.readLine().substring(14));
 		final int nrows = Integer.parseInt(in.readLine().substring(14));
